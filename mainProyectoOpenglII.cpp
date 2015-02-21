@@ -107,7 +107,7 @@ void loadFace(GLenum target, char *filename, GLubyte* image, int* size)
   fclose(file);
 
   if (mipmaps) {
-    gluBuild2DMipmaps(target, GL_RGB8, (GLuint)size, (GLuint)size, GL_RGB, GL_UNSIGNED_BYTE, image);
+    //gluBuild2DMipmaps(target, GL_RGB8, (GLuint)size, (GLuint)size, GL_RGB, GL_UNSIGNED_BYTE, image);
   } else {
     glTexImage2D(target, 0, GL_RGB8, (GLuint)size, (GLuint)size, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
   }
@@ -466,20 +466,6 @@ int main (int argc, char** argv) {
 		}
 	}*/
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective( /* field of view in degree */ 40.0,
-	/* aspect ratio */ 1.0,
-	/* Z near */ 1.0, /* Z far */ 10.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(0.0, 0.0, 5.0,  /* eye is at (0,0,5) */
-	0.0, 0.0, 0.0,      /* center is at (0,0,0) */
-	0.0, 1.0, 0.);      /* up is in positive Y direction */
-
-	glEnable(GL_DEPTH_TEST);
-
-	makeCubeMap();
 
 	if (loadasset( "escenario.obj") != 0) {
 		return -1;
@@ -489,6 +475,20 @@ int main (int argc, char** argv) {
 	glutReshapeFunc(changeViewport);
 	glutDisplayFunc(render);
 	glutKeyboardFunc (Keyboard);
+
+	/*
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	*/
+	//gluPerspective( /* field of view in degree */ 0.0, /* aspect ratio */ 0.0, /* Z near */ 5.0, /* Z far */ 10.0);
+	/*glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();*/
+	//gluLookAt(0.0, 0.0, 5.0,  /* eye is at (0,0,5) */ 0.0, 0.0, 0.0,      /* center is at (0,0,0) */0.0, 1.0, 0.);      /* up is in positive Y direction */
+	/*
+	glEnable(GL_DEPTH_TEST);*/
+
+	makeCubeMap();
+
 	glutMainLoop();
 	return 0;
 
