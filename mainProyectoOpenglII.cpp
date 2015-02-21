@@ -24,7 +24,7 @@ static GLuint textName[3];
 GLubyte* textureID[3];
 GLubyte* texturasCubo[6];
 int sizes[3][2];
-int sizesCubo[3][2];
+int sizesCubo[6];
 aiVector3D scene_min, scene_max, scene_center;
 
 //Spotlight value
@@ -132,7 +132,7 @@ void makeCubeMap(void)
   int i;
 
   for (i=0; i<6; i++) {
-    loadFace(faceTarget[i], faceFile[i], texturasCubo[i], &sizesCubo[i][1]);
+    loadFace(faceTarget[i], faceFile[i], texturasCubo[i], &sizesCubo[i]);
   }
   if (mipmaps) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER,
