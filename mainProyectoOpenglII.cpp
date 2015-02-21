@@ -1,10 +1,14 @@
 // Cubica
 
 #include <stdlib.h>
-
 #include <GL\glew.h>
 #include <GL\freeglut.h>
 #include <iostream>
+#include <math.h> 
+#include <string.h> 
+#include <stdio.h>
+#include <assert.h>
+#include "glm.h"
 
 // assimp include files. These three are usually needed.
 #include <assimp/cimport.h>
@@ -15,11 +19,12 @@
 const aiScene* scene01 = NULL;
 const aiScene* scene02 = NULL;
 const aiScene* scene03 = NULL;
-
 GLuint scene_list = 0;
 static GLuint textName[3];
 GLubyte* textureID[3];
+GLubyte* texturasCubo[6];
 int sizes[3][2];
+int sizesCubo[3][2];
 aiVector3D scene_min, scene_max, scene_center;
 
 //Spotlight value
@@ -37,10 +42,8 @@ GLfloat qaRed[] = {1.0, 0.0, 0.0, 1.0}; //Red Color
 GLfloat cutoff_spot = 50.0f;
 GLfloat exponent_spot = 25.0f;
 
-
 #define aisgl_min(x,y) (x<y?x:y)
 #define aisgl_max(x,y) (y>x?y:x)
-
 
 using namespace std;
 
@@ -48,11 +51,106 @@ using namespace std;
 #define DEF_floorGridXSteps	10.0
 #define DEF_floorGridZSteps	10.0
 
+/*Cube Map*/
+static GLenum faceTarget[6] = {
+  GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+  GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+  GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+  GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+  GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+  GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+};
 
-#include "glm.h"
+/* Pre-generated cube map images. */
+char *faceFile[6] = {
+  "negx.ppm", 
+  "posx.ppm", 
+  "posy.ppm", 
+  "negy.ppm", 
+  "posz.ppm", 
+  "negz.ppm", 
+};
 
+/* Menu items. */
+enum {
+  M_TEAPOT, M_TORUS, M_SPHERE,
+  M_SHINY, M_DULL,
+  M_REFLECTION_MAP, M_NORMAL_MAP,
+};
 
+int hasTextureLodBias = 0;
 
+int mode = GL_REFLECTION_MAP;
+int wrap = GL_CLAMP;
+int shape = M_TEAPOT;
+int mipmaps = 1;
+
+float lodBias = 0.0;
+
+int spinning = 0, moving = 0;
+int beginx, beginy;
+int W = 300, H = 300;
+float curquat[4];
+float lastquat[4];
+
+/*Carga las caras del cubo*/
+void loadFace(GLenum target, char *filename, GLubyte* image, int* size)
+{
+  FILE *file;
+
+  file = fopen(filename, "rb");
+  if (file == NULL) {
+    printf("cm_demo: could not open \"%s\"\n", filename);
+    exit(1);
+  }
+  image = glmReadPPM(filename, size, size);
+  fclose(file);
+
+  if (mipmaps) {
+    gluBuild2DMipmaps(target, GL_RGB8, (GLuint)size, (GLuint)size, GL_RGB, GL_UNSIGNED_BYTE, image);
+  } else {
+    glTexImage2D(target, 0, GL_RGB8, (GLuint)size, (GLuint)size, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+  }
+}
+
+void updateTexgen(void)
+{
+  assert(mode == GL_NORMAL_MAP || mode == GL_REFLECTION_MAP);
+  glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, mode);
+  glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, mode);
+  glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, mode);
+}
+
+void updateWrap(void)
+{
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, wrap);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, wrap);
+}
+
+void makeCubeMap(void)
+{
+  int i;
+
+  for (i=0; i<6; i++) {
+    loadFace(faceTarget[i], faceFile[i], texturasCubo[i], &sizesCubo[i][1]);
+  }
+  if (mipmaps) {
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER,
+      GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  } else {
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  }
+  glEnable(GL_TEXTURE_CUBE_MAP);
+
+  updateTexgen();
+  updateWrap();
+
+  glEnable(GL_TEXTURE_GEN_S);
+  glEnable(GL_TEXTURE_GEN_T);
+  glEnable(GL_TEXTURE_GEN_R);
+}
 
 void changeViewport(int w, int h) {
 	
@@ -108,8 +206,8 @@ void cargar_materiales(int idx) {
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaRed);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaRed);
 	}
-
 }
+
 
 void recursive_render (const aiScene *sc, const aiNode* nd)
 {
@@ -163,9 +261,7 @@ void recursive_render (const aiScene *sc, const aiNode* nd)
 	for (n = 0; n < nd->mNumChildren; ++n) {
 		cargar_materiales(n);
 		recursive_render(sc, nd->mChildren[n]);
-		
 	}
-
 	glPopMatrix();
 }
 
@@ -200,11 +296,8 @@ void render(){
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
 	glLoadIdentity ();                       
 	gluLookAt (0, 80, 250, 0.0, 15.0, 0.0, 0.0, 1.0, 0.0);
-
-	
 
 	//Suaviza las lineas
 	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -235,22 +328,15 @@ void render(){
 	    glEndList();
 	}
 	glCallList(scene_list);
-	
-	
 	glPopMatrix();
-	
-
-
 	glDisable(GL_BLEND);
 	glDisable(GL_LINE_SMOOTH);
 	glutSwapBuffers();
 }
 
 void animacion(int value) {
-	
 	glutTimerFunc(10,animacion,1);
     glutPostRedisplay();
-	
 }
 
 void get_bounding_box_for_node (const aiNode* nd, 
@@ -261,7 +347,6 @@ void get_bounding_box_for_node (const aiNode* nd,
 	aiMatrix4x4 prev;
 	unsigned int n = 0, t;
 
-	
 		prev = *trafo;
 		aiMultiplyMatrix4(trafo,&nd->mTransformation);
 
@@ -293,14 +378,11 @@ void get_bounding_box_for_node (const aiNode* nd,
 void get_bounding_box (aiVector3D* min, aiVector3D* max)
 {
 	aiMatrix4x4 trafo;
-
-	
 	aiIdentityMatrix4(&trafo);
 	
 	min->x = min->y = min->z =  1e10f;
 	max->x = max->y = max->z = -1e10f;
 	get_bounding_box_for_node(scene01->mRootNode,min,max,&trafo);
-
 
 }
 
@@ -309,7 +391,6 @@ int loadasset (const char* path)
 	// we are taking one of the postprocessing presets to avoid
 	// spelling out 20+ single postprocessing flags here.
 	
-		
 		scene01 = aiImportFile(path,aiProcessPreset_TargetRealtime_MaxQuality);
 
 		if (scene01) {
@@ -320,15 +401,12 @@ int loadasset (const char* path)
 			return 0;
 		}
 
-
 	return 1;
 }
 
 
 void init(){
 
-
-	
    glEnable(GL_LIGHTING);
    glEnable(GL_LIGHT0);
    glEnable(GL_DEPTH_TEST);
@@ -366,7 +444,6 @@ int main (int argc, char** argv) {
 
 	glutCreateWindow("Bunny Project");
 
-
 	aiLogStream stream;
 	// get a handle to the predefined STDOUT log stream and attach
 	// it to the logging system. It remains active for all further
@@ -389,21 +466,29 @@ int main (int argc, char** argv) {
 		}
 	}*/
 
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective( /* field of view in degree */ 40.0,
+	/* aspect ratio */ 1.0,
+	/* Z near */ 1.0, /* Z far */ 10.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(0.0, 0.0, 5.0,  /* eye is at (0,0,5) */
+	0.0, 0.0, 0.0,      /* center is at (0,0,0) */
+	0.0, 1.0, 0.);      /* up is in positive Y direction */
+
+	glEnable(GL_DEPTH_TEST);
+
+	makeCubeMap();
+
 	if (loadasset( "escenario.obj") != 0) {
 		return -1;
 	}
 	
-
-
-
 	init ();
-
 	glutReshapeFunc(changeViewport);
 	glutDisplayFunc(render);
 	glutKeyboardFunc (Keyboard);
-	
-
-
 	glutMainLoop();
 	return 0;
 

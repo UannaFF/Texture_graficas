@@ -1,17 +1,19 @@
-﻿Build started 20/02/2015 13:40:16.
-     1>Project "C:\Users\ani\Documents\USB\Computación Gráfica\OpenglProyectoS09\OpenglProyectoS11.vcxproj" on node 2 (Build target(s)).
+﻿Build started 2/21/2015 12:35:41 AM.
+     1>Project "C:\Users\Franco\Documents\GitHub\Texture_graficas\OpenglProyectoS11.vcxproj" on node 2 (Build target(s)).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(346,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\dev\Assimp\include /I"C:\Users\ani\Documents\USB\Computación Gráfica\Opengl\glew-1.7.0\include" /I"C:\Users\ani\Documents\USB\Computación Gráfica\Opengl\freeglut\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt mainProyectoOpenglII.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\dev\Assimp\include /IC:\dev\Opengl\freeglut\include /I"C:\dev\Opengl\glew-1.7.0\include" /IC:\Users\Franco\Documents\GitHub\Texture_graficas /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt mainProyectoOpenglII.cpp
          mainProyectoOpenglII.cpp
-     1>c:\users\ani\documents\usb\computación gráfica\openglproyectos09\mainproyectoopenglii.cpp(31): warning C4305: 'initializing' : truncation from 'double' to 'GLfloat'
-     1>c:\users\ani\documents\usb\computación gráfica\openglproyectos09\mainproyectoopenglii.cpp(59): warning C4101: 'aspectratio' : unreferenced local variable
+     1>c:\users\franco\documents\github\texture_graficas\mainproyectoopenglii.cpp(36): warning C4305: 'inicializando' : truncamiento de 'double' a 'GLfloat'
+     1>c:\users\franco\documents\github\texture_graficas\mainproyectoopenglii.cpp(101): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 11.0\vc\include\stdio.h(218) : vea la declaración de 'fopen'
+     1>c:\users\franco\documents\github\texture_graficas\mainproyectoopenglii.cpp(157): warning C4101: 'aspectratio' : variable local sin referencia
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"s\OpenglProyectoIII.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\dev\Assimp\lib\x86 /LIBPATH:"C:\Users\ani\Documents\USB\Computación Gráfica\Opengl\glew-1.7.0\lib" /LIBPATH:"C:\Users\ani\Documents\USB\Computación Gráfica\Opengl\freeglut\lib" freeglut.lib glew32.lib assimp.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"s\OpenglProyectoIII.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"s\OpenglProyectoIII.lib" /MACHINE:X86 Debug\glm.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"s\OpenglProyectoIII.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\dev\Assimp\lib\x86 /LIBPATH:"C:\dev\Opengl\glew-1.7.0\lib" /LIBPATH:C:\dev\Opengl\freeglut\lib freeglut.lib glew32.lib assimp.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"s\OpenglProyectoIII.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"s\OpenglProyectoIII.lib" /MACHINE:X86 Debug\glm.obj
          Debug\mainProyectoOpenglII.obj
-         OpenglProyectoS11.vcxproj -> C:\Users\ani\Documents\USB\Computación Gráfica\OpenglProyectoS09\s\OpenglProyectoIII.exe
-     1>Done Building Project "C:\Users\ani\Documents\USB\Computación Gráfica\OpenglProyectoS09\OpenglProyectoS11.vcxproj" (Build target(s)).
+         OpenglProyectoS11.vcxproj -> C:\Users\Franco\Documents\GitHub\Texture_graficas\s\OpenglProyectoIII.exe
+     1>Done Building Project "C:\Users\Franco\Documents\GitHub\Texture_graficas\OpenglProyectoS11.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:05.78
+Time Elapsed 00:00:02.46

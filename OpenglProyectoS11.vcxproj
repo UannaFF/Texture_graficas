@@ -55,12 +55,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\dev\Assimp\include;C:\Users\ani\Documents\USB\Computación Gráfica\Opengl\glew-1.7.0\include;C:\Users\ani\Documents\USB\Computación Gráfica\Opengl\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\dev\Assimp\include;C:\dev\Opengl\freeglut\include;C:\dev\Opengl\glew-1.7.0\include;C:\Users\Franco\Documents\GitHub\Texture_graficas;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\dev\Assimp\lib\x86;C:\Users\ani\Documents\USB\Computación Gráfica\Opengl\glew-1.7.0\lib;C:\Users\ani\Documents\USB\Computación Gráfica\Opengl\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\dev\Assimp\lib\x86;C:\dev\Opengl\glew-1.7.0\lib;C:\dev\Opengl\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>freeglut.lib;glew32.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
