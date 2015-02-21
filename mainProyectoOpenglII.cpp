@@ -96,20 +96,12 @@ float lastquat[4];
 /*Carga las caras del cubo*/
 void loadFace(GLenum target, char *filename, GLubyte* image, int* size)
 {
-  FILE *file;
-
-  file = fopen(filename, "rb");
-  if (file == NULL) {
-    printf("cm_demo: could not open \"%s\"\n", filename);
-    exit(1);
-  }
   image = glmReadPPM(filename, size, size);
-  fclose(file);
-
+ 
   if (mipmaps) {
-    //gluBuild2DMipmaps(target, GL_RGB8, (GLuint)size, (GLuint)size, GL_RGB, GL_UNSIGNED_BYTE, image);
+    gluBuild2DMipmaps(target, GL_RGB8, (GLuint)size, (GLuint)size, GL_RGB, GL_UNSIGNED_BYTE, image);
   } else {
-    glTexImage2D(target, 0, GL_RGB8, (GLuint)size, (GLuint)size, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    //glTexImage2D(target, 0, GL_RGB8, (GLuint)size, (GLuint)size, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
   }
 }
 

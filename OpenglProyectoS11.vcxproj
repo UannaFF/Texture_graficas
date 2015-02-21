@@ -55,13 +55,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\dev\Assimp\include;C:\dev\Opengl\freeglut\include;C:\dev\Opengl\glew-1.7.0\include;C:\Users\Franco\Documents\GitHub\Texture_graficas;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\fgvzla\Documents\Visual Studio 2012\Opengl\freeglut\include;C:\Users\fgvzla\Documents\Visual Studio 2012\Opengl\glew-1.7.0\include;C:\dev\Assimp\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\dev\Assimp\lib\x86;C:\dev\Opengl\glew-1.7.0\lib;C:\dev\Opengl\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freeglut.lib;glew32.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\dev\Assimp\lib\x86;C:\Users\fgvzla\Documents\Visual Studio 2012\Opengl\glew-1.7.0\lib;C:\Users\fgvzla\Documents\Visual Studio 2012\Opengl\freeglut\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freeglut.lib;glew32.lib;assimp.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -73,15 +73,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\ani\Documents\USB\Computación Gráfica\Opengl\glew-1.7.0\include;C:\Users\ani\Documents\USB\Computación Gráfica\Opengl\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\fgvzla\Documents\Visual Studio 2012\Opengl\freeglut\include;C:\Users\fgvzla\Documents\Visual Studio 2012\Opengl\glew-1.7.0\include;C:\dev\Assimp\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Users\ani\Documents\USB\Computación Gráfica\Opengl\glew-1.7.0\lib;C:\Users\ani\Documents\USB\Computación Gráfica\Opengl\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\dev\Assimp\lib;C:\Users\fgvzla\Documents\Visual Studio 2012\Opengl\glew-1.7.0\lib;C:\Users\fgvzla\Documents\Visual Studio 2012\Opengl\freeglut\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freeglut.lib;glew32.lib;assimp.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
