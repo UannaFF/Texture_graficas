@@ -19,12 +19,14 @@
 const aiScene* scene01 = NULL;
 const aiScene* scene02 = NULL;
 const aiScene* scene03 = NULL;
+bool reflect = false;
 GLuint scene_list = 0;
 static GLuint textName[3];
+static GLuint textNameCube[6];
 GLubyte* textureID[3];
 GLubyte* texturasCubo[6];
 int sizes[3][2];
-int sizesCubo[6];
+int sizesCubo[6][2];
 aiVector3D scene_min, scene_max, scene_center;
 
 //Spotlight value
@@ -94,24 +96,17 @@ float curquat[4];
 float lastquat[4];
 
 /*Carga las caras del cubo*/
-void loadFace(GLenum target, char *filename, GLubyte* image, int* size)
+/*void loadFace(GLenum target, char *filename, GLubyte* image, int* size)
 {
-  FILE *file;
 
-  file = fopen(filename, "rb");
-  if (file == NULL) {
-    printf("cm_demo: could not open \"%s\"\n", filename);
-    exit(1);
-  }
   image = glmReadPPM(filename, size, size);
-  fclose(file);
 
   if (mipmaps) {
     //gluBuild2DMipmaps(target, GL_RGB8, (GLuint)size, (GLuint)size, GL_RGB, GL_UNSIGNED_BYTE, image);
   } else {
     glTexImage2D(target, 0, GL_RGB8, (GLuint)size, (GLuint)size, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
   }
-}
+}*/
 
 void updateTexgen(void)
 {
@@ -129,27 +124,50 @@ void updateWrap(void)
 
 void makeCubeMap(void)
 {
-  int i;
+	int i;
+	glEnable(GL_TEXTURE_CUBE_MAP);
 
-  for (i=0; i<6; i++) {
-    loadFace(faceTarget[i], faceFile[i], texturasCubo[i], &sizesCubo[i]);
-  }
-  if (mipmaps) {
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER,
-      GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  } else {
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  }
-  glEnable(GL_TEXTURE_CUBE_MAP);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+	glEnable(GL_TEXTURE_GEN_R);
 
-  updateTexgen();
-  updateWrap();
+	glTexGeni(GL_S,GL_TEXTURE_GEN_MODE,GL_REFLECTION_MAP);
+    glTexGeni(GL_T,GL_TEXTURE_GEN_MODE,GL_REFLECTION_MAP);
+    glTexGeni(GL_R,GL_TEXTURE_GEN_MODE,GL_REFLECTION_MAP);
 
-  glEnable(GL_TEXTURE_GEN_S);
-  glEnable(GL_TEXTURE_GEN_T);
-  glEnable(GL_TEXTURE_GEN_R);
+	//INICIALIZANDO LAS TEXTURAS PARA EL CUBE
+
+	glGenTextures(1, &textNameCube[0]);
+	glBindTexture(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, textNameCube[0]);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, (GLuint)sizesCubo[0][0], (GLuint)sizesCubo[0][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasCubo[0]);
+
+	glGenTextures(1, &textNameCube[1]);
+	glBindTexture(GL_TEXTURE_CUBE_MAP_POSITIVE_X, textNameCube[1]);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, (GLuint)sizesCubo[1][0], (GLuint)sizesCubo[1][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasCubo[1]);
+
+	glGenTextures(1, &textNameCube[2]);
+	glBindTexture(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, textNameCube[2]);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, (GLuint)sizesCubo[2][0], (GLuint)sizesCubo[2][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasCubo[2]);
+
+	glGenTextures(1, &textNameCube[3]);
+	glBindTexture(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, textNameCube[3]);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, (GLuint)sizesCubo[3][0], (GLuint)sizesCubo[3][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasCubo[3]);
+
+	glGenTextures(1, &textNameCube[4]);
+	glBindTexture(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, textNameCube[4]);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, (GLuint)sizesCubo[4][0], (GLuint)sizesCubo[4][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasCubo[4]);
+
+	glGenTextures(1, &textNameCube[5]);
+	glBindTexture(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, textNameCube[5]);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, (GLuint)sizesCubo[5][0], (GLuint)sizesCubo[5][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasCubo[5]);
+
+	// Sets the texture's behavior for wrapping (optional)
+    glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_MODULATE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,GL_MODULATE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_R,GL_MODULATE);
+    // Sets the texture's max/min filters
+    glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 }
 
 void changeViewport(int w, int h) {
@@ -169,12 +187,13 @@ void changeViewport(int w, int h) {
 
 
 void cargar_materiales(int idx) {
+	
 	GLfloat mShininess[] = {128};
 	GLfloat whiteSpecularMaterial[] = {1.0, 1.0, 1.0};
 
 	// Material Piso
 	if (idx == 0){
-	   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[0][0], (GLuint)sizes[0][1], 0, GL_RGB, GL_UNSIGNED_BYTE, textureID[0]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[0][0], (GLuint)sizes[0][1], 0, GL_RGB, GL_UNSIGNED_BYTE, textureID[0]);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, whiteSpecularMaterial);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mShininess);
@@ -192,7 +211,8 @@ void cargar_materiales(int idx) {
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, whiteSpecularMaterial);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mShininess);
-
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaRed);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaRed);
 	}
 
 	// Material Conejo
@@ -274,16 +294,25 @@ void Keyboard(unsigned char key, int x, int y)
 		exit (0);
 		break;
 	case 'q':
-		cutoff_spot -= 1.0;
+		cutoff_spot -= 2.0;
 		break;
 	case 'w':
-		cutoff_spot += 1.0;
+		cutoff_spot += 2.0;
 		break;
 	case 'a':
-		exponent_spot -= 1.0;
+		exponent_spot -= 2.0;
 		break;
 	case 's':
-		exponent_spot += 1.0;
+		exponent_spot += 2.0;
+		break;
+	case 'e':
+		spotDir[0] -= 0.1;
+		break;
+	case 'd':
+		spotDir[0] += 0.1;
+		break;
+	case 'c':
+		reflect = !reflect;
 		break;
   }
 
@@ -298,6 +327,8 @@ void render(){
 
 	glLoadIdentity ();                       
 	gluLookAt (0, 80, 250, 0.0, 15.0, 0.0, 0.0, 1.0, 0.0);
+
+	
 
 	//Suaviza las lineas
 	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -315,6 +346,8 @@ void render(){
     //shiny spot
 	glLightf(GL_LIGHT0,GL_SPOT_EXPONENT,exponent_spot);
 	//Termina spotlight
+	if(reflect)
+		makeCubeMap();
 
 	glPushMatrix();
 	glEnable(GL_NORMALIZE);
@@ -418,6 +451,11 @@ void init(){
 	textureID[1] = glmReadPPM("texAO_columna.ppm", &sizes[1][0], &sizes[1][1]);
 	textureID[2] = glmReadPPM("texAO_bunny.ppm", &sizes[2][0], &sizes[2][1]);
 
+	//Inicializa texturas del cubemap
+	for(int i=0;i<6;i++) {
+		texturasCubo[i] = glmReadPPM(faceFile[i], &sizesCubo[i][0], &sizesCubo[i][1]);
+	}
+
 	for(int i=0;i<3;i++){
 		glGenTextures(1, &textName[i]);
 		glBindTexture(GL_TEXTURE_2D, textName[i]);
@@ -486,8 +524,6 @@ int main (int argc, char** argv) {
 	//gluLookAt(0.0, 0.0, 5.0,  /* eye is at (0,0,5) */ 0.0, 0.0, 0.0,      /* center is at (0,0,0) */0.0, 1.0, 0.);      /* up is in positive Y direction */
 	/*
 	glEnable(GL_DEPTH_TEST);*/
-
-	makeCubeMap();
 
 	glutMainLoop();
 	return 0;
