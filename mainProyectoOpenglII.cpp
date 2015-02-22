@@ -19,15 +19,20 @@
 const aiScene* scene01 = NULL;
 const aiScene* scene02 = NULL;
 const aiScene* scene03 = NULL;
+int color = 1;
+bool lux = true;
 bool reflect = false;
 GLuint scene_list = 0;
 static GLuint textName[3];
 static GLuint textNameCube[6];
+static GLuint textNameSky[3];
 GLubyte* textureID[3];
 GLubyte* texturasCubo[6];
 bool cubemap = true;
+GLubyte* texturasSkybox[3];
 int sizes[3][2];
 int sizesCubo[6][2];
+
 aiVector3D scene_min, scene_max, scene_center;
 
 //Spotlight value
@@ -36,12 +41,15 @@ GLfloat  specular[] = { 1.0f, 1.0f, 1.0f, 1.0f};
 GLfloat  specref[] =  { 1.0f, 1.0f, 1.0f, 1.0f };
 GLfloat  ambientLight[] = { 0.1f, 0.1f, 0.1f, 1.0f};
 GLfloat  spotDir[] = { 0.0f, -1.0f, 0.0f };
-GLfloat qaAmbientLight[]    = {0.1, 0.1, 0.1, 1.0};
 
-GLfloat qaBlack[] = {0.0, 0.0, 0.0, 1.0}; //Black Color
-GLfloat qaGreen[] = {1.0, 0.0, 0.0, 1.0}; //Green Color
+GLfloat qaAmbientLight[] = {1.0, 1.0, 1.0, 1.0};
+GLfloat qaSpec[]    = {1.0, 0.1, 0.1, 1.0};
+GLfloat qaYellow[] = {1.0, 1.0, 0.0, 1.0}; //Black Color
+GLfloat qaGreen[] = {0.0, 1.0, 0.0, 1.0}; //Green Color
 GLfloat qaWhite[] = {1.0, 1.0, 1.0, 1.0}; //White Color
 GLfloat qaRed[] = {1.0, 0.0, 0.0, 1.0}; //Red Color
+GLfloat qaMagenta[] = {1.0, 0.0, 1.0, 1.0};
+GLfloat qaBunny[] = {0.5, 0.5, 0.5, 1.0};
 GLfloat cutoff_spot = 50.0f;
 GLfloat exponent_spot = 25.0f;
 
@@ -74,18 +82,11 @@ char *faceFile[6] = {
   "negz.ppm", 
 };
 
-/* Menu items. */
-enum {
-  M_TEAPOT, M_TORUS, M_SPHERE,
-  M_SHINY, M_DULL,
-  M_REFLECTION_MAP, M_NORMAL_MAP,
-};
 
 int hasTextureLodBias = 0;
 
 int mode = GL_REFLECTION_MAP;
 int wrap = GL_MODULATE;
-int shape = M_TEAPOT;
 int mipmaps = 1;
 
 float lodBias = 0.0;
@@ -182,22 +183,21 @@ void changeViewport(int w, int h) {
    glLoadIdentity ();
    gluPerspective(30, (GLfloat) w/(GLfloat) h, 1.0, 3000.0);
    glMatrixMode (GL_MODELVIEW);
-
 }
 
 
 void cargar_materiales(int idx) {
 	
 	GLfloat mShininess[] = {128};
-	GLfloat whiteSpecularMaterial[] = {1.0, 1.0, 1.0};
+	GLfloat whiteSpecularMaterial[] = {0.5, 0.5, 0.5};
 
 	// Material Piso
 	if (idx == 0){
 		glBindTexture(GL_TEXTURE_2D, textName[0]);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaWhite);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaWhite);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, whiteSpecularMaterial);
-		//glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mShininess);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaRed);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaRed);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mShininess);
 
 	}
 
@@ -205,18 +205,18 @@ void cargar_materiales(int idx) {
 	if (idx == 1){
 		glBindTexture(GL_TEXTURE_2D, textName[1]);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, whiteSpecularMaterial);
-		//glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mShininess);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaRed);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaRed);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mShininess);
 	}
 
 	// Material Conejo
 	if (idx == 2){
 		glBindTexture(GL_TEXTURE_2D, textName[2]);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, whiteSpecularMaterial);
-		//glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mShininess);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaRed);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaRed);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mShininess);
 	}
 }
 
@@ -303,6 +303,12 @@ void Keyboard(unsigned char key, int x, int y)
 	case 'd':
 		spotDir[0] += 0.1;
 		break;
+	case 'r':
+		spotDir[2] -= 0.1;
+		break;
+	case 'f':
+		spotDir[2] += 0.1;
+		break;
 	case 'c':
 		if (cubemap)
 		{
@@ -319,6 +325,43 @@ void Keyboard(unsigned char key, int x, int y)
 			glEnable(GL_TEXTURE_GEN_R);
 		}
 		break;
+	case 't':
+		qaBunny[0] -= 0.1;
+		break;
+	case 'g':
+		qaBunny[0] += 0.1;
+
+		break;
+	case 'y':
+		qaBunny[1] -= 0.1;
+		break;
+	case 'h':
+		qaBunny[1] += 0.1;
+		break;
+	case 'u':
+		qaBunny[2] -= 0.1;
+		break;
+	case 'j':
+		qaBunny[2] += 0.1;
+		break;
+	case '1':
+		color = 1;
+		break;
+	case '2':
+		color = 2;
+		break;
+	case '3':
+		color = 3;
+		break;
+	case '4':
+		color = 4;
+		break;
+	case '5':
+		color = 5;
+		break;
+	case 'v':
+		lux = !lux;
+		break;
   }
 
   scene_list = 0;
@@ -333,15 +376,99 @@ void render(){
 	glLoadIdentity ();                       
 	gluLookAt (0, 80, 250, 0.0, 15.0, 0.0, 0.0, 1.0, 0.0);
 
-	
-
 	//Suaviza las lineas
 	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable( GL_LINE_SMOOTH );
-	
+
+	//Cargando las texturas del skybox
+		texturasSkybox[0] = glmReadPPM(faceFile[5], &sizesCubo[5][0], &sizesCubo[5][1]);
+		glGenTextures(1, &textNameSky[0]);
+		glBindTexture(GL_TEXTURE_2D, textNameSky[0]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[5][0], (GLuint)sizes[5][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[0]);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+		//Segunda
+		texturasSkybox[1] = glmReadPPM(faceFile[0], &sizesCubo[0][0], &sizesCubo[0][1]);
+		glGenTextures(1, &textNameSky[1]);
+		glBindTexture(GL_TEXTURE_2D, textNameSky[1]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[0][0], (GLuint)sizes[0][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[1]);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+		//tercera
+		texturasSkybox[2] = glmReadPPM(faceFile[1], &sizesCubo[1][0], &sizesCubo[1][1]);
+		glGenTextures(1, &textNameSky[2]);
+		glBindTexture(GL_TEXTURE_2D, textNameSky[2]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[1][0], (GLuint)sizes[1][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[2]);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	//Dibujando planos del skybox
+	//glColor3f(1.0,1.0,1.0);
+	glBindTexture(GL_TEXTURE_2D, textNameSky[0]);
+	glBegin(GL_QUADS);      
+		 glTexCoord2f(0.0f, 0.0f); glVertex3f(-150.0, 100.0,  -150.0);
+		 glTexCoord2f(1.0f, 0.0f); glVertex3f(150.0, 100.0, -150.0); 
+		 glTexCoord2f(1.0f, 1.0f); glVertex3f(150.0, 0.0, -150.0);
+		 glTexCoord2f(0.0f, 1.0f); glVertex3f(-150.0, 0.0,  -150.0);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, textNameSky[1]);
+	glBegin(GL_QUADS);      
+		 glTexCoord2f(0.0f, 0.0f);glVertex3f(-150.0, 100.0,  150.0);
+		 glTexCoord2f(1.0f, 0.0f);glVertex3f(-150.0, 100.0, -150.0); 
+		 glTexCoord2f(1.0f, 1.0f);glVertex3f(-150.0, 0.0, -150.0);
+		 glTexCoord2f(0.0f, 1.0f);glVertex3f(-150.0, 0.0,  150.0);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, textNameSky[2]);
+	glBegin(GL_QUADS);      
+		 glTexCoord2f(0.0f, 0.0f);glVertex3f(150.0, 100.0,  150.0);
+		 glTexCoord2f(1.0f, 0.0f);glVertex3f(150.0, 100.0, -150.0); 
+		 glTexCoord2f(1.0f, 1.0f);glVertex3f(150.0, 0.0, -150.0);
+		 glTexCoord2f(0.0f, 1.0f);glVertex3f(150.0, 0.0,  150.0);
+	glEnd();
+
+	if(!lux)
+		glDisable(GL_LIGHT0);
+	else
+		glEnable(GL_LIGHT0);
+
 	//Creando el spotligth
-	glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
-	glLightfv(GL_LIGHT0,GL_DIFFUSE,ambientLight);
+	switch (color){
+		case 1:
+			glLightfv(GL_LIGHT0, GL_AMBIENT, qaWhite);
+			glLightfv(GL_LIGHT0,GL_DIFFUSE,qaWhite);
+			break;
+		case 2:
+			glLightfv(GL_LIGHT0, GL_AMBIENT, qaRed);
+			glLightfv(GL_LIGHT0,GL_DIFFUSE,qaRed);
+			break;
+		case 3:
+			glLightfv(GL_LIGHT0, GL_AMBIENT, qaGreen);
+			glLightfv(GL_LIGHT0,GL_DIFFUSE,qaGreen);
+			break;
+		case 4:
+			glLightfv(GL_LIGHT0, GL_AMBIENT, qaYellow);
+			glLightfv(GL_LIGHT0,GL_DIFFUSE,qaYellow);
+			break;
+		case 5:
+			glLightfv(GL_LIGHT0, GL_AMBIENT, qaMagenta);
+			glLightfv(GL_LIGHT0,GL_DIFFUSE,qaMagenta);
+			break;
+	}
     glLightfv(GL_LIGHT0,GL_SPECULAR,specular);
     glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
 	//direccion de la luz
@@ -447,7 +574,7 @@ void init(){
    glEnable(GL_LIGHT0);
    glEnable(GL_DEPTH_TEST);
    glEnable(GL_TEXTURE_2D);
-   glEnable(GL_COLOR_MATERIAL);
+   //glEnable(GL_COLOR_MATERIAL);
 
 	//Inicializa las texturas
 	textureID[0] = glmReadPPM("texAO_plano.ppm", &sizes[0][0], &sizes[0][1]);
