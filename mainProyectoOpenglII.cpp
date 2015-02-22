@@ -20,14 +20,18 @@ const aiScene* scene01 = NULL;
 const aiScene* scene02 = NULL;
 const aiScene* scene03 = NULL;
 int color = 1;
+bool lux = true;
 bool reflect = false;
 GLuint scene_list = 0;
 static GLuint textName[3];
 static GLuint textNameCube[6];
+static GLuint textNameSky[3];
 GLubyte* textureID[3];
 GLubyte* texturasCubo[6];
+GLubyte* texturasSkybox[3];
 int sizes[3][2];
 int sizesCubo[6][2];
+
 aiVector3D scene_min, scene_max, scene_center;
 
 //Spotlight value
@@ -309,6 +313,9 @@ void Keyboard(unsigned char key, int x, int y)
 	case '5':
 		color = 5;
 		break;
+	case 'v':
+		lux = !lux;
+		break;
   }
 
   scene_list = 0;
@@ -326,7 +333,73 @@ void render(){
 	//Suaviza las lineas
 	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable( GL_LINE_SMOOTH );
-	
+
+	//Cargando las texturas del skybox
+		texturasSkybox[0] = glmReadPPM(faceFile[5], &sizesCubo[5][0], &sizesCubo[5][1]);
+		glGenTextures(1, &textNameSky[0]);
+		glBindTexture(GL_TEXTURE_2D, textNameSky[0]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[5][0], (GLuint)sizes[5][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[0]);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+		//Segunda
+		texturasSkybox[1] = glmReadPPM(faceFile[0], &sizesCubo[0][0], &sizesCubo[0][1]);
+		glGenTextures(1, &textNameSky[1]);
+		glBindTexture(GL_TEXTURE_2D, textNameSky[1]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[0][0], (GLuint)sizes[0][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[1]);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+		//tercera
+		texturasSkybox[2] = glmReadPPM(faceFile[1], &sizesCubo[1][0], &sizesCubo[1][1]);
+		glGenTextures(1, &textNameSky[2]);
+		glBindTexture(GL_TEXTURE_2D, textNameSky[2]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[1][0], (GLuint)sizes[1][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[2]);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	//Dibujando planos del skybox
+	//glColor3f(1.0,1.0,1.0);
+	glBindTexture(GL_TEXTURE_2D, textNameSky[0]);
+	glBegin(GL_QUADS);      
+		 glTexCoord2f(0.0f, 0.0f); glVertex3f(-150.0, 100.0,  -150.0);
+		 glTexCoord2f(1.0f, 0.0f); glVertex3f(150.0, 100.0, -150.0); 
+		 glTexCoord2f(1.0f, 1.0f); glVertex3f(150.0, 0.0, -150.0);
+		 glTexCoord2f(0.0f, 1.0f); glVertex3f(-150.0, 0.0,  -150.0);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, textNameSky[1]);
+	glBegin(GL_QUADS);      
+		 glTexCoord2f(0.0f, 0.0f);glVertex3f(-150.0, 100.0,  150.0);
+		 glTexCoord2f(1.0f, 0.0f);glVertex3f(-150.0, 100.0, -150.0); 
+		 glTexCoord2f(1.0f, 1.0f);glVertex3f(-150.0, 0.0, -150.0);
+		 glTexCoord2f(0.0f, 1.0f);glVertex3f(-150.0, 0.0,  150.0);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, textNameSky[2]);
+	glBegin(GL_QUADS);      
+		 glTexCoord2f(0.0f, 0.0f);glVertex3f(150.0, 100.0,  150.0);
+		 glTexCoord2f(1.0f, 0.0f);glVertex3f(150.0, 100.0, -150.0); 
+		 glTexCoord2f(1.0f, 1.0f);glVertex3f(150.0, 0.0, -150.0);
+		 glTexCoord2f(0.0f, 1.0f);glVertex3f(150.0, 0.0,  150.0);
+	glEnd();
+
+	if(!lux)
+		glDisable(GL_LIGHT0);
+	else
+		glEnable(GL_LIGHT0);
+
 	//Creando el spotligth
 	switch (color){
 		case 1:
@@ -479,6 +552,8 @@ void init(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	
 	//Termina de inicializar las texturas
 
 	//Comenzando inicializacion de spotlight
