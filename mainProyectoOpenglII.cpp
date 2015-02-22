@@ -246,8 +246,8 @@ void cargar_materiales(int idx) {
 	if (idx == 1){
 		glBindTexture(GL_TEXTURE_2D, textName[1]);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, whiteSpecularMaterial);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaRed);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaRed);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaWhite);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaWhite);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mShininess);
 	}
 
@@ -423,6 +423,8 @@ void render(){
 
 
 	//Dibujamos el SkyBox
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaWhite);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaWhite);
 	if (cubemap)
 	{
 		glDisable(GL_TEXTURE_CUBE_MAP);
