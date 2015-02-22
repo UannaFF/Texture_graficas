@@ -82,46 +82,9 @@ char *faceFile[6] = {
   "negz.ppm", 
 };
 
-
-int hasTextureLodBias = 0;
-
 int mode = GL_REFLECTION_MAP;
 int wrap = GL_MODULATE;
 int mipmaps = 1;
-
-float lodBias = 0.0;
-
-int spinning = 0, moving = 0;
-int beginx, beginy;
-int W = 300, H = 300;
-float curquat[4];
-float lastquat[4];
-
-/*Carga las caras del cubo*/
-/*void loadFace(GLenum target, char *filename, GLubyte* image, int* size)
-{
-  image = glmReadPPM(filename, size, size);
-  if (mipmaps) {
-    gluBuild2DMipmaps(target, GL_RGB8, (GLuint)size, (GLuint)size, GL_RGB, GL_UNSIGNED_BYTE, image);
-  } else {
-    //glTexImage2D(target, 0, GL_RGB8, (GLuint)size, (GLuint)size, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-  }
-}*/
-
-void updateTexgen(void)
-{
-  assert(mode == GL_NORMAL_MAP || mode == GL_REFLECTION_MAP);
-  glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, mode);
-  glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, mode);
-  glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, mode);
-}
-
-void updateWrap(void)
-{
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, wrap);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, wrap);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, wrap);
-}
 
 
 void makeSkyBox(void){
@@ -159,7 +122,6 @@ void makeSkyBox(void){
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[1][0], (GLuint)sizes[1][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[2]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	
 
 }
 
@@ -255,8 +217,8 @@ void cargar_materiales(int idx) {
 	if (idx == 2){
 		glBindTexture(GL_TEXTURE_2D, textName[2]);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, whiteSpecularMaterial);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaRed);
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaRed);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaBunny);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaBunny);
 		glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mShininess);
 	}
 }
