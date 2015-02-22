@@ -1,5 +1,7 @@
 // Cubica
-
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include <stdlib.h>
 #include <GL\glew.h>
 #include <GL\freeglut.h>
@@ -9,6 +11,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "glm.h"
+#pragma comment(lib, "winmm.lib")
 
 // assimp include files. These three are usually needed.
 #include <assimp/cimport.h>
@@ -44,10 +47,10 @@ GLfloat  spotDir[] = { 0.0f, -1.0f, 0.0f };
 
 GLfloat qaAmbientLight[] = {1.0, 1.0, 1.0, 1.0};
 GLfloat qaSpec[]    = {1.0, 0.1, 0.1, 1.0};
-GLfloat qaYellow[] = {1.0, 1.0, 0.0, 1.0}; //Black Color
-GLfloat qaGreen[] = {0.0, 1.0, 0.0, 1.0}; //Green Color
-GLfloat qaWhite[] = {1.0, 1.0, 1.0, 1.0}; //White Color
-GLfloat qaRed[] = {1.0, 0.0, 0.0, 1.0}; //Red Color
+GLfloat qaYellow[] = {0.0, 0.0, 1.0, 1.0}; 
+GLfloat qaGreen[] = {0.0, 1.0, 0.0, 1.0}; 
+GLfloat qaWhite[] = {1.0, 1.0, 1.0, 1.0}; 
+GLfloat qaRed[] = {1.0, 0.0, 0.0, 1.0}; 
 GLfloat qaMagenta[] = {1.0, 0.0, 1.0, 1.0};
 GLfloat qaBunny[] = {0.5, 0.5, 0.5, 1.0};
 GLfloat cutoff_spot = 50.0f;
@@ -348,21 +351,27 @@ void Keyboard(unsigned char key, int x, int y)
 		qaBunny[2] += 0.1;
 		break;
 	case '1':
+		PlaySound(TEXT("white.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		color = 1;
 		break;
 	case '2':
+		PlaySound(TEXT("red.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		color = 2;
 		break;
 	case '3':
+		PlaySound(TEXT("green.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		color = 3;
 		break;
 	case '4':
+		PlaySound(TEXT("blue.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		color = 4;
 		break;
 	case '5':
+		PlaySound(TEXT("pink.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		color = 5;
 		break;
 	case 'v':
+		if(lux) PlaySound(TEXT("MyAppSound"), NULL, SND_APPLICATION);
 		lux = !lux;
 		break;
   }
@@ -373,6 +382,7 @@ void Keyboard(unsigned char key, int x, int y)
 
 
 void render(){
+	
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -552,7 +562,6 @@ int loadasset (const char* path)
 
 
 void init(){
-
    glEnable(GL_LIGHTING);
    glEnable(GL_LIGHT0);
    glEnable(GL_DEPTH_TEST);
