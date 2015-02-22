@@ -123,6 +123,47 @@ void updateWrap(void)
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, wrap);
 }
 
+
+void makeSkyBox(void){
+	texturasSkybox[0] = glmReadPPM(faceFile[5], &sizesCubo[5][0], &sizesCubo[5][1]);
+	glGenTextures(1, &textNameSky[0]);
+	glBindTexture(GL_TEXTURE_2D, textNameSky[0]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[5][0], (GLuint)sizes[5][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[0]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	//Segunda
+	texturasSkybox[1] = glmReadPPM(faceFile[0], &sizesCubo[0][0], &sizesCubo[0][1]);
+	glGenTextures(1, &textNameSky[1]);
+	glBindTexture(GL_TEXTURE_2D, textNameSky[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[0][0], (GLuint)sizes[0][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[1]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	//tercera
+	texturasSkybox[2] = glmReadPPM(faceFile[1], &sizesCubo[1][0], &sizesCubo[1][1]);
+	glGenTextures(1, &textNameSky[2]);
+	glBindTexture(GL_TEXTURE_2D, textNameSky[2]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[1][0], (GLuint)sizes[1][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[2]);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	
+
+}
+
+
 void makeCubeMap(void)
 {
 	glEnable(GL_TEXTURE_CUBE_MAP);
@@ -380,43 +421,15 @@ void render(){
 	glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable( GL_LINE_SMOOTH );
 
-	//Cargando las texturas del skybox
-		texturasSkybox[0] = glmReadPPM(faceFile[5], &sizesCubo[5][0], &sizesCubo[5][1]);
-		glGenTextures(1, &textNameSky[0]);
-		glBindTexture(GL_TEXTURE_2D, textNameSky[0]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[5][0], (GLuint)sizes[5][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[0]);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-		//Segunda
-		texturasSkybox[1] = glmReadPPM(faceFile[0], &sizesCubo[0][0], &sizesCubo[0][1]);
-		glGenTextures(1, &textNameSky[1]);
-		glBindTexture(GL_TEXTURE_2D, textNameSky[1]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[0][0], (GLuint)sizes[0][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[1]);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-		//tercera
-		texturasSkybox[2] = glmReadPPM(faceFile[1], &sizesCubo[1][0], &sizesCubo[1][1]);
-		glGenTextures(1, &textNameSky[2]);
-		glBindTexture(GL_TEXTURE_2D, textNameSky[2]);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLuint)sizes[1][0], (GLuint)sizes[1][1], 0, GL_RGB, GL_UNSIGNED_BYTE, texturasSkybox[2]);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	//Dibujando planos del skybox
-	//glColor3f(1.0,1.0,1.0);
+	//Dibujamos el SkyBox
+	if (cubemap)
+	{
+		glDisable(GL_TEXTURE_CUBE_MAP);
+		glDisable(GL_TEXTURE_GEN_S);
+		glDisable(GL_TEXTURE_GEN_T);
+		glDisable(GL_TEXTURE_GEN_R);
+	}
 	glBindTexture(GL_TEXTURE_2D, textNameSky[0]);
 	glBegin(GL_QUADS);      
 		 glTexCoord2f(0.0f, 0.0f); glVertex3f(-150.0, 100.0,  -150.0);
@@ -440,7 +453,13 @@ void render(){
 		 glTexCoord2f(1.0f, 1.0f);glVertex3f(150.0, 0.0, -150.0);
 		 glTexCoord2f(0.0f, 1.0f);glVertex3f(150.0, 0.0,  150.0);
 	glEnd();
-
+	if (cubemap)
+	{
+		glEnable(GL_TEXTURE_CUBE_MAP);
+		glEnable(GL_TEXTURE_GEN_S);
+		glEnable(GL_TEXTURE_GEN_T);
+		glEnable(GL_TEXTURE_GEN_R);
+	}
 	if(!lux)
 		glDisable(GL_LIGHT0);
 	else
@@ -605,6 +624,8 @@ void init(){
 	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
 	makeCubeMap();
+
+	makeSkyBox();
 }
 
 
